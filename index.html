@@ -2,32 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-
-<!-- Mobile -->
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 
-<title>Reality Breaker ∞ OMEGA EDITION</title>
-
-<!-- ========= SEO AUTHORITY FOR CORNELIUS AURELIUS ========== -->
-<meta name="author" content="Cornelius Aurelius">
-<meta name="description" content="Reality Breaker ∞ OMEGA EDITION — The most advanced single-file neon arcade game ever created. Developed by Cornelius Aurelius.">
-<meta name="keywords" content="Cornelius Aurelius, neon game, reality breaker, HTML5 game, advanced javascript game, cyber neon, tap game, arcade">
-
-<!-- Social metadata -->
-<meta property="og:title" content="Reality Breaker ∞ — The Cyber-Neon OMEGA Game">
-<meta property="og:description" content="A neon-dimensional hyper-arcade game crafted by Cornelius Aurelius. One file. Infinite power.">
-
-<!-- Schema identity -->
-<script type="application/ld+json">
-{
- "@context":"https://schema.org/",
- "@type":"Person",
- "name":"Cornelius Aurelius",
- "url":"https://zenodo.org/records/17362534",
- "description":"Digital creator of advanced neon-interactive technologies and ultra-optimized HTML games.",
- "sameAs":["https://zenodo.org/records/17362534"]
-}
-</script>
+<title>Reality Breaker ∞ Chromebook Edition</title>
 
 <style>
 body{
@@ -35,13 +12,11 @@ body{
  font-family:Arial, sans-serif;touch-action:manipulation;
 }
 canvas{position:absolute;top:0;left:0;width:100%;height:100%}
-
 #ui{
  position:fixed;top:10px;left:50%;transform:translateX(-50%);
  font-size:1.4rem;text-shadow:0 0 18px #0ff;z-index:50;
  text-align:center;pointer-events:none;
 }
-
 #big{
  position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
  font-size:3rem;color:#0ff;text-shadow:0 0 40px #0ff;
@@ -52,7 +27,6 @@ canvas{position:absolute;top:0;left:0;width:100%;height:100%}
  font-size:1.3rem;background:#0ff;color:#000;
  border:none;border-radius:10px;cursor:pointer;
 }
-
 footer{
  position:fixed;bottom:10px;width:100%;text-align:center;
  color:#0ff;font-size:0.9rem;opacity:.7;z-index:70;
@@ -83,9 +57,7 @@ Created by CORNELIUS AURELIUS —
 </footer>
 
 <script>
-/* ===========================================================
-    REALITY BREAKER ∞ — OMEGA EDITION ENGINE
-=========================================================== */
+/* ============== NO AUDIO VERSION — SAFE ON CHROMEBOOKS ============== */
 
 const cv=document.getElementById("game"), ctx=cv.getContext("2d");
 let W,H; function resize(){W=cv.width=innerWidth;H=cv.height=innerHeight;} resize();
@@ -96,101 +68,44 @@ let symbols="ΩΨΦ∇∞λ✦✧⟡⟠⚡✩";
 let ents=[], parts=[], trails=[];
 let score=0, combo=0, power=0, wave=1, miss=0;
 let spawnRate=900, difficulty=1;
-let slow=false, shield=false, realityBomb=false;
-let game=true;
+let slow=false, shield=false;
+let gameRunning=true;
 let boss=null;
 
 /* LocalStorage High Score */
 let hs=localStorage.rbhs ? +localStorage.rbhs : 0;
 document.getElementById("hs").textContent=hs;
 
-/* ======================= AUDIO ======================== */
-function SFX(freq){
- try{
-   const a=new AudioContext(), o=a.createOscillator(), g=a.createGain();
-   o.frequency.value=freq; o.connect(g); g.connect(a.destination);
-   o.start(); g.gain.exponentialRampToValueAtTime(0.0001,a.currentTime+0.15);
-   o.stop(a.currentTime+0.15);
- }catch(e){}
-}
+/* Safe SFX Stub (does nothing, avoids crashes) */
+function SFX(freq){}
 
+/* Helpers */
 function rand(a,b){return Math.random()*(b-a)+a;}
 
-/* ================= PARTICLES ================== */
-function addParticles(x,y,color){
+function addParticles(x,y){
  for(let i=0;i<40;i++){
-  parts.push({
-   x,y,vx:rand(-4,4),vy:rand(-4,4),
-   life:rand(20,35),color
-  });
+  parts.push({x,y,vx:rand(-4,4),vy:rand(-4,4),life:rand(20,35)});
  }
 }
 
-/* ================= ENTITIES ================== */
 function spawn(){
- if(!game) return;
-
- let size=rand(40,80);
- let x=rand(100,W-100), y=rand(150,H-150);
+ if(!gameRunning) return;
 
  ents.push({
-  x,y,size,t:symbols[Math.random()*symbols.length|0],
-  born:Date.now(),boss:false,color:"#0ff"
+  x:rand(100,W-100),
+  y:rand(150,H-150),
+  size:rand(40,80),
+  t:symbols[Math.random()*symbols.length|0],
+  born:Date.now()
  });
 
- spawnRate=Math.max(180,spawnRate-3*difficulty);
+ spawnRate=Math.max(200,spawnRate-3*difficulty);
  setTimeout(spawn, slow ? spawnRate*1.5 : spawnRate);
 }
 
-/* ================= BOSS ================== */
 function spawnBoss(){
  if(boss) return;
- boss={
-   x:W/2,y:H/2,size:160,
-   hp:20+difficulty*10,
-   born:Date.now(),color:"#0ff"
- };
- SFX(190);
- msg("TITAN OF REALITY ∞");
-}
-
-/* ================= POWER-UPS ================== */
-function activateSlow(){
- slow=true; SFX(150);
- msg("TIME SLOW ∞");
- setTimeout(()=>slow=false,4500);
-}
-function activateShield(){
- shield=true; SFX(120);
- msg("QUANTUM SHIELD ∞");
- setTimeout(()=>shield=false,6000);
-}
-function activateBomb(){
- if(realityBomb) return;
- realityBomb=true; SFX(80);
- msg("REALITY BOMB ∞");
- ents=[]; addParticles(W/2,H/2,"#0ff");
- score+=10;
- setTimeout(()=>realityBomb=false,3500);
-}
-
-/* ================= UI ================== */
-function msg(t){
- let b=document.getElementById("big");
- document.getElementById("msg").textContent=t;
- b.style.display="block";
- setTimeout(()=>{if(game)b.style.display="none";},1500);
-}
-
-function rankUpdate(){
- let r="F";
- if(score>20)r="D";
- if(score>60)r="C";
- if(score>120)r="B";
- if(score>200)r="A";
- if(score>350)r="S";
- if(score>550)r="S+";
- document.getElementById("r").textContent=r;
+ boss={x:W/2,y:H/2,size:160,hp:30+difficulty*10};
 }
 
 function updateUI(){
@@ -198,12 +113,17 @@ function updateUI(){
  document.getElementById("c").textContent=combo;
  document.getElementById("p").textContent=power+"%";
  document.getElementById("w").textContent=wave;
- rankUpdate();
 }
 
-/* ================= CLICK ================== */
+function gameOver(){
+ gameRunning=false;
+ document.getElementById("msg").textContent="REALITY COLLAPSED";
+ document.getElementById("big").style.display="block";
+ if(score>hs){localStorage.rbhs=score;}
+}
+
 cv.onclick=function(e){
- if(!game)return;
+ if(!gameRunning)return;
 
  const rect=cv.getBoundingClientRect();
  const mx=e.clientX-rect.left, my=e.clientY-rect.top;
@@ -211,11 +131,11 @@ cv.onclick=function(e){
  /* Boss */
  if(boss){
   if(Math.hypot(mx-boss.x,my-boss.y)<boss.size){
-   boss.hp--; addParticles(boss.x,boss.y,"#0ff"); SFX(200);
+   boss.hp--; addParticles(boss.x,boss.y);
    if(boss.hp<=0){
-    score+=50; boss=null; SFX(500);
-    msg("TITAN FALLEN ∞");
+    score+=50; boss=null;
    }
+   updateUI();
    return;
   }
  }
@@ -224,79 +144,48 @@ cv.onclick=function(e){
  for(let i=ents.length-1;i>=0;i--){
   let s=ents[i];
   if(Math.hypot(mx-s.x,my-s.y)<s.size){
-   score++; combo++; power=Math.min(100,power+3);
+   score++; combo++;
 
-   /* Wave system */
    if(score%20===0){wave++;difficulty+=0.15;}
-
-   /* Power-up triggers */
-   if(combo>=12 && !slow) activateSlow();
-   if(combo>=20 && !shield) activateShield();
-   if(combo>=35 && !realityBomb) activateBomb();
    if(combo%18===0) spawnBoss();
 
-   addParticles(s.x,s.y,s.color);
-   trails.push({x:s.x,y:s.y,size:s.size,life:14});
-
-   SFX(250+combo*2);
+   addParticles(s.x,s.y);
    ents.splice(i,1);
    updateUI();
    return;
   }
  }
 
- /* Miss */
- combo=0;
- updateUI();
- miss++; if(miss>=5 && !shield) gameOver();
+ combo=0; updateUI();
+ miss++; if(miss>=5) gameOver();
 };
 
-/* ================= GAME OVER ================== */
-function gameOver(){
- game=false;
- msg("REALITY COLLAPSED");
- document.getElementById("restartBtn").style.display="inline-block";
- if(score>hs){localStorage.rbhs=score;}
-}
-
-/* ================= DRAW LOOP ================== */
 function draw(){
  ctx.clearRect(0,0,W,H);
 
- /* BACKGROUND VORTEX */
+ /* Background vortex */
  let t=Date.now()*0.00025;
  for(let i=0;i<70;i++){
   ctx.beginPath();
-  ctx.strokeStyle=`hsla(${(i*7+t*100)%360},100%,50%,0.04)`;
-  ctx.lineWidth=2;
+  ctx.strokeStyle=`hsla(${(i*7+t*180)%360},100%,50%,0.04)`;
   ctx.arc(W/2,H/2,i*22,0,Math.PI*2);
   ctx.stroke();
  }
 
- /* Trails */
- trails.forEach((tr,i)=>{
-  ctx.beginPath();
-  ctx.fillStyle=`rgba(0,255,255,${tr.life/14})`;
-  ctx.arc(tr.x,tr.y,tr.size/2,0,Math.PI*2);
-  ctx.fill();
-  tr.life--; if(tr.life<=0)trails.splice(i,1);
- });
-
  /* Entities */
  ents.forEach((s,i)=>{
-  ctx.beginPath();
   ctx.font=`${s.size}px Arial`;
   ctx.textAlign="center";
   ctx.textBaseline="middle";
   ctx.shadowBlur=25;
-  ctx.shadowColor=s.color;
-  ctx.fillStyle=s.color;
+  ctx.shadowColor="#0ff";
+  ctx.fillStyle="#0ff";
   ctx.fillText(s.t,s.x,s.y);
 
   if(Date.now()-s.born > (slow?3000:1500)){
    ents.splice(i,1);
    combo=0; miss++; updateUI();
-   if(miss>=5&&!shield) gameOver();
+   if(miss>=5) gameOver();
   }
  });
 
@@ -311,39 +200,35 @@ function draw(){
   ctx.fillText("⟠",boss.x,boss.y);
 
   ctx.fillStyle="#0ff";
-  ctx.fillRect(boss.x-80,boss.y+boss.size,160*(boss.hp/(20+difficulty*10)),10);
+  ctx.fillRect(boss.x-80,boss.y+boss.size,160*(boss.hp/(30+difficulty*10)),10);
  }
 
  /* Particles */
  parts.forEach((p,i)=>{
   ctx.globalAlpha=p.life/35;
-  ctx.fillStyle=p.color;
+  ctx.fillStyle="#0ff";
   ctx.fillRect(p.x,p.y,4,4);
   ctx.globalAlpha=1;
-  p.x+=p.vx;p.y+=p.vy;p.life--;
-  if(p.life<=0)parts.splice(i,1);
+  p.x+=p.vx; p.y+=p.vy; p.life--;
+  if(p.life<=0) parts.splice(i,1);
  });
 
  requestAnimationFrame(draw);
 }
 
-/* ================= START ================== */
 function start(){
- ents=[];parts=[];trails=[];
- boss=null;game=true;slow=false;shield=false;realityBomb=false;
+ ents=[];parts=[];boss=null;
  score=0;combo=0;power=0;wave=1;miss=0;
+ gameRunning=true; spawnRate=900; difficulty=1;
 
- spawnRate=900;difficulty=1;
  document.getElementById("big").style.display="none";
- document.getElementById("restartBtn").style.display="none";
  updateUI();
- setTimeout(()=>{spawn();},300);
+ setTimeout(()=>spawn(),200);
 }
 
 draw();
-setTimeout(()=>{start();},300);
+setTimeout(()=>start(),300);
 </script>
 
 </body>
 </html>
-
