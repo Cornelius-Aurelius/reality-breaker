@@ -3,374 +3,321 @@
 <head>
 <meta charset="UTF-8">
 
-<!-- ====== VIEWPORT ====== -->
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Mobile -->
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 
-<title>Reality Breaker ∞ — Neon Dimension Game</title>
+<title>Reality Breaker ∞ Supreme Edition</title>
 
-<!-- ====== SEO AUTHORITY FOR: CORNELIUS AURELIUS ====== -->
+<!-- ===========================
+     SEO AUTHORITY FOR YOUR NAME
+     Cornelius Aurelius
+=========================== -->
 <meta name="author" content="Cornelius Aurelius">
-<meta name="copyright" content="Cornelius Aurelius">
-<meta name="keywords" content="Cornelius Aurelius, neon game, reality breaker, dimension tap game, advanced HTML game, cyber glow game">
-<meta name="description" content="Reality Breaker ∞ — A neon dimension game created with advanced single-file technology. Produced by Cornelius Aurelius.">
+<meta name="description" content="Reality Breaker ∞ Supreme Edition — A high-speed neon universe reaction game created by Cornelius Aurelius.">
+<meta name="keywords" content="Cornelius Aurelius, neon game, reality breaker, HTML5 arcade, dimension game, tap game, cyber neon">
 
-<!-- Open Graph (Facebook / Meta / LinkedIn) -->
-<meta property="og:title" content="Reality Breaker ∞ — Neon Hyper-Reality Game">
-<meta property="og:description" content="A neon-dimensional reaction game created by Cornelius Aurelius. Enter the glitch dimension. Break reality.">
-<meta property="og:type" content="website">
+<meta property="og:title" content="Reality Breaker ∞ Supreme Edition">
+<meta property="og:description" content="A cyber-neon fractal reality-breaking game crafted by Cornelius Aurelius.">
 
-<!-- Twitter Cards -->
-<meta name="twitter:title" content="Reality Breaker ∞">
-<meta name="twitter:description" content="A cyber-neon reality game crafted by Cornelius Aurelius.">
-
-<!-- Subtle SEO Identity Boost (hidden schema) -->
 <script type="application/ld+json">
 {
-  "@context": "https://schema.org/",
-  "@type": "Person",
-  "name": "Cornelius Aurelius",
-  "url": "https://zenodo.org/records/17362534",
-  "description": "Digital creator and originator of advanced interactive neon-web experiences.",
-  "sameAs": [
-    "https://zenodo.org/records/17362534"
-  ]
+ "@context":"https://schema.org/",
+ "@type":"Person",
+ "name":"Cornelius Aurelius",
+ "url":"https://zenodo.org/records/17362534",
+ "description":"Digital creator and developer of advanced neon-interactive web games.",
+ "sameAs":["https://zenodo.org/records/17362534"]
 }
 </script>
 
 <style>
-    body { margin:0; background:black; overflow:hidden; touch-action:manipulation; font-family:Arial, sans-serif;}
-    canvas { position:absolute; top:0; left:0; width:100vw; height:100vh; }
-
-    #ui {
-        position:fixed;
-        top:10px;
-        left:50%;
-        transform:translateX(-50%);
-        color:#0ff;
-        font-size:1.5rem;
-        text-shadow:0 0 20px #0ff;
-        font-weight:bold;
-        z-index:20;
-        pointer-events:none;
-        text-align:center;
-    }
-
-    #pulseMsg {
-        position:fixed;
-        top:40%;
-        left:50%;
-        transform:translate(-50%, -50%);
-        font-size:2.5rem;
-        color:#0ff;
-        text-shadow:0 0 40px #0ff;
-        display:none;
-        z-index:40;
-    }
-
-    #bigMessage {
-        position:fixed;
-        top:50%; left:50%;
-        transform:translate(-50%,-50%);
-        font-size:3rem;
-        color:#0ff;
-        text-shadow:0 0 30px #0ff;
-        display:none;
-        z-index:50;
-        text-align:center;
-    }
-
-    #restartBtn {
-        margin-top:20px;
-        padding:12px 25px;
-        background:#0ff;
-        color:#000;
-        border:none;
-        font-size:1.2rem;
-        border-radius:10px;
-        cursor:pointer;
-        display:none;
-    }
-
-    footer {
-        position:fixed;
-        bottom:10px;
-        width:100%;
-        text-align:center;
-        color:#0ff;
-        font-size:0.9rem;
-        opacity:.7;
-        z-index:60;
-    }
+body{
+    margin:0;background:black;overflow:hidden;
+    font-family:Arial, sans-serif;color:#0ff;
+    touch-action:manipulation;
+}
+canvas{
+    position:absolute;top:0;left:0;width:100%;height:100%;
+}
+#ui{
+    position:fixed;top:10px;left:50%;transform:translateX(-50%);
+    font-size:1.3rem;text-shadow:0 0 20px #0ff;z-index:5;text-align:center;
+}
+#big{
+    position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+    font-size:3rem;color:#0ff;text-shadow:0 0 30px #0ff;z-index:10;
+    text-align:center;display:none;
+}
+#big button{
+    margin-top:20px;padding:12px 25px;font-size:1.2rem;
+    background:#0ff;color:#000;border:none;border-radius:10px;cursor:pointer;
+}
+footer{
+    position:fixed;bottom:10px;width:100%;text-align:center;color:#0ff;
+    font-size:0.9rem;opacity:.7;z-index:20;
+}
 </style>
+
 </head>
 <body>
 
 <canvas id="game"></canvas>
 
 <div id="ui">
-    Score: <span id="score">0</span><br>
-    Combo: <span id="combo">0</span><br>
-    Power: <span id="power">0%</span>
+Score: <span id="s">0</span> |
+Combo: <span id="c">0</span> |
+Power: <span id="p">0%</span><br>
+Rank: <span id="r">F</span> |
+Wave: <span id="w">1</span> |
+High Score: <span id="hs">0</span>
 </div>
 
-<div id="pulseMsg">TIME SLOW ∞</div>
-
-<div id="bigMessage">
-    <span id="messageText"></span><br>
-    <button id="restartBtn" onclick="startGame()">PLAY AGAIN</button>
+<div id="big">
+    <span id="msg"></span><br>
+    <button onclick="start()">PLAY AGAIN</button>
 </div>
 
 <footer>
-    Crafted by CORNELIUS AURELIUS —
+    Created by CORNELIUS AURELIUS — 
     <a href="https://zenodo.org/records/17362534" target="_blank" style="color:#0ff;">Zenodo Peace</a>
 </footer>
 
 <script>
-/* =====================================================
-    REALITY BREAKER ∞ — GOD-TIER ENGINE
-=====================================================*/
+/* ============================================================
+    REALITY BREAKER SUPREME ENGINE ∞
+============================================================ */
 
-const canvas = document.getElementById("game");
-const ctx = canvas.getContext("2d");
-let W, H;
+const cv=document.getElementById("game"), ctx=cv.getContext("2d");
+let W,H; function resize(){W=cv.width=innerWidth;H=cv.height=innerHeight;} resize();
+onresize=resize;
 
-function resize(){
-    W = canvas.width = window.innerWidth;
-    H = canvas.height = window.innerHeight;
+let symbols="ΩΨΦ∇∞λ✦✧⟡⟠⚡✩";
+let ents=[], parts=[], trails=[];
+let score=0, combo=0, power=0, wave=1, miss=0;
+let spawnRate=900, difficulty=1;
+let slow=false, shield=false;
+let game=true;
+let boss=null;
+
+let hs=localStorage.rbhs?+localStorage.rbhs:0;
+document.getElementById("hs").textContent=hs;
+
+function SFX(freq){
+    const a=new AudioContext(), o=a.createOscillator(), g=a.createGain();
+    o.frequency.value=freq; o.connect(g); g.connect(a.destination);
+    o.start(); g.gain.exponentialRampToValueAtTime(0.0001,a.currentTime+0.15);
+    o.stop(a.currentTime+0.15);
 }
-resize();
-window.onresize = resize;
 
-const symbols = ["Ω","Ψ","Φ","∇","∞","λ","✦","✧","⟡","⟠","⚡","✩"];
+function rand(a,b){return Math.random()*(b-a)+a;}
 
-let entities = [];
-let particles = [];
-let score = 0;
-let combo = 0;
-let power = 0;
-let missed = 0;
-
-let spawnRate = 900;
-let gameRunning = true;
-let slowTimeActive = false;
-let bossActive = false;
-
-/* =========== RANDOM =========== */
-function rand(min,max){ return Math.random()*(max-min)+min; }
-
-/* =====================================================
-    PARTICLES
-=====================================================*/
-function makeParticles(x,y,color){
-    for(let i=0;i<30;i++){
-        particles.push({
+function addParticles(x,y,color){
+    for(let i=0;i<40;i++){
+        parts.push({
             x,y,
-            vx:rand(-3,3),
-            vy:rand(-3,3),
-            life:rand(20,40),
-            color
+            vx:rand(-4,4),vy:rand(-4,4),
+            life:rand(15,35),color
         });
     }
 }
 
-/* =====================================================
-    ENTITIES
-=====================================================*/
-function spawnSymbol(){
-    if(!gameRunning) return;
+function spawn(){
+    if(!game) return;
 
-    const size = rand(40,80);
-    const x = rand(70, W-70);
-    const y = rand(70, H-70);
+    let size=rand(40,80)*difficulty;
+    let x=rand(60,W-60), y=rand(60,H-60);
 
-    entities.push({
-        x,y,size,
-        text: symbols[Math.floor(Math.random()*symbols.length)],
-        born:Date.now(),
-        color:slowTimeActive ? "#09f" : "cyan"
-    });
+    ents.push({x,y,size,t:symbols[Math.random()*symbols.length|0],born:Date.now(),boss:false,color:"#0ff"});
 
-    spawnRate = Math.max(250, spawnRate - 8);
-
-    setTimeout(spawnSymbol, slowTimeActive ? spawnRate*1.8 : spawnRate);
+    spawnRate=Math.max(200,spawnRate-4*difficulty);
+    setTimeout(spawn, slow?spawnRate*1.8:spawnRate);
 }
 
-/* =====================================================
-    SUPER POWER: TIME SLOW ∞
-=====================================================*/
-function activateSlow(){
-    if(power < 100 || slowTimeActive) return;
-
-    slowTimeActive = true;
-    power = 0;
-    document.getElementById("power").textContent = power + "%";
-
-    document.getElementById("pulseMsg").style.display = "block";
-
-    setTimeout(()=>{
-        slowTimeActive = false;
-        document.getElementById("pulseMsg").style.display="none";
-    }, 4500);
-}
-
-/* =====================================================
-    BOSS EVENT
-=====================================================*/
 function spawnBoss(){
-    if(bossActive) return;
-    bossActive = true;
-
-    entities.push({
-        x:W/2,
-        y:H/2,
-        size:150,
-        text:"⟠",
-        born:Date.now(),
-        color:"#0ff",
-        boss:true,
-        hp:10
-    });
-
-    message("DIMENSIONAL BOSS ∞");
+    if(boss) return;
+    boss={x:W/2,y:H/2,size:150, hp:20*difficulty, color:"#0ff",born:Date.now()};
+    SFX(180);
+    msg("DIMENSIONAL TITAN ∞");
 }
 
-/* =====================================================
-    TAP / HIT DETECTION
-=====================================================*/
-canvas.onclick = function(e){
-    if(!gameRunning) return;
+function msg(t){
+    let m=document.getElementById("big");
+    document.getElementById("msg").textContent=t;
+    m.style.display="block";
+    setTimeout(()=>{if(game)m.style.display="none";},1500);
+}
 
-    const rect = canvas.getBoundingClientRect();
-    const mx = e.clientX - rect.left;
-    const my = e.clientY - rect.top;
+function rankUpdate(){
+    let r="F";
+    if(score>15) r="D";
+    if(score>40) r="C";
+    if(score>90) r="B";
+    if(score>160) r="A";
+    if(score>260) r="S";
+    if(score>400) r="S+";
+    document.getElementById("r").textContent=r;
+}
 
-    for(let i=entities.length-1;i>=0;i--){
-        let s = entities[i];
-        let dx = mx - s.x;
-        let dy = my - s.y;
+function click(e){
+    if(!game)return;
+    const rect=cv.getBoundingClientRect(), mx=e.clientX-rect.left, my=e.clientY-rect.top;
 
-        if(Math.hypot(dx,dy) < s.size){
-            
-            // Boss hit
-            if(s.boss){
-                s.hp--;
-                makeParticles(s.x,s.y,"#0ff");
-                if(s.hp <= 0){
-                    entities.splice(i,1);
-                    bossActive = false;
-                    score += 20;
-                }
-                return;
+    if(boss){
+        let dx=mx-boss.x, dy=my-boss.y;
+        if(Math.hypot(dx,dy)<boss.size){
+            boss.hp--; addParticles(boss.x,boss.y,"#0ff");
+            SFX(200+boss.hp*10);
+            if(boss.hp<=0){
+                score+=30; boss=null; SFX(500);
+                msg("TITAN DEFEATED ∞");
             }
-
-            score++;
-            combo++;
-            power = Math.min(100, power + 3);
-
-            document.getElementById("score").textContent = score;
-            document.getElementById("combo").textContent = combo;
-            document.getElementById("power").textContent = power + "%";
-
-            makeParticles(s.x,s.y,s.color);
-
-            if(combo % 20 === 0) spawnBoss();
-            if(combo % 12 === 0) activateSlow();
-
-            if(navigator.vibrate) navigator.vibrate(20);
-
-            entities.splice(i,1);
             return;
         }
     }
 
-    combo = 0;
-    document.getElementById("combo").textContent = combo;
-};
+    for(let i=ents.length-1;i>=0;i--){
+        let s=ents[i];
+        if(Math.hypot(mx-s.x,my-s.y)<s.size){
+            score++; combo++; power=Math.min(100,power+4); SFX(300+combo*2);
 
-/* =====================================================
-    GAME OVER
-=====================================================*/
+            // Waves
+            if(score%20===0){wave++;difficulty+=0.15;}
+
+            // Slow Time
+            if(combo>=12 && !slow) activateSlow();
+
+            // Shield
+            if(combo>=25 && !shield) activateShield();
+
+            // Boss trigger
+            if(combo%18===0) spawnBoss();
+
+            addParticles(s.x,s.y,s.color);
+            trails.push({x:s.x,y:s.y,size:s.size,life:12});
+            ents.splice(i,1);
+            updateUI();
+            return;
+        }
+    }
+
+    // Miss penalty
+    combo=0; updateUI();
+    miss++; if(miss>=5 && !shield) gameOver();
+}
+
+cv.onclick=click;
+
+function activateSlow(){
+    slow=true; SFX(150);
+    msg("TIME SLOW ∞");
+    setTimeout(()=>slow=false,4500);
+}
+
+function activateShield(){
+    shield=true; SFX(120);
+    msg("QUANTUM SHIELD ∞");
+    setTimeout(()=>shield=false,6000);
+}
+
+function updateUI(){
+    document.getElementById("s").textContent=score;
+    document.getElementById("c").textContent=combo;
+    document.getElementById("p").textContent=power+"%";
+    document.getElementById("w").textContent=wave;
+    rankUpdate();
+}
+
 function gameOver(){
-    gameRunning = false;
-    message("REALITY COLLAPSED");
+    game=false;
+    msg("REALITY COLLAPSED");
     document.getElementById("restartBtn").style.display="inline-block";
+    if(score>hs){localStorage.rbhs=score;}
 }
 
-/* =====================================================
-    SHOW MESSAGE
-=====================================================*/
-function message(txt){
-    const box=document.getElementById("bigMessage");
-    document.getElementById("messageText").textContent=txt;
-    box.style.display="block";
-
-    setTimeout(()=>{ if(gameRunning) box.style.display="none"; },1500);
-}
-
-/* =====================================================
-    RENDER LOOP
-=====================================================*/
 function draw(){
     ctx.clearRect(0,0,W,H);
 
-    // Draw symbols
-    entities.forEach((s,i)=>{
-        ctx.fillStyle=s.color;
-        ctx.font = `${s.size}px Arial`;
+    // Vortex background
+    let t=Date.now()*0.0003;
+    for(let i=0;i<60;i++){
+        ctx.beginPath();
+        ctx.strokeStyle=`hsla(${(i*6+t*100)%360},100%,50%,0.05)`;
+        ctx.lineWidth=2;
+        let r=i*20;
+        ctx.arc(W/2,H/2,r,0,Math.PI*2);
+        ctx.stroke();
+    }
+
+    // Trails
+    trails.forEach((tr,i)=>{
+        ctx.beginPath();
+        ctx.fillStyle=`rgba(0,255,255,${tr.life/12})`;
+        ctx.arc(tr.x,tr.y,tr.size/2,0,Math.PI*2);
+        ctx.fill();
+        tr.life--; if(tr.life<=0)trails.splice(i,1);
+    });
+
+    // Entities
+    ents.forEach((s,i)=>{
+        ctx.beginPath();
+        ctx.font=`${s.size}px Arial`;
         ctx.textAlign="center";
         ctx.textBaseline="middle";
         ctx.shadowBlur=25;
         ctx.shadowColor=s.color;
-        ctx.fillText(s.text,s.x,s.y);
+        ctx.fillStyle=s.color;
+        ctx.fillText(s.t,s.x,s.y);
 
-        if(Date.now()-s.born > (slowTimeActive?3000:1500)){
-            entities.splice(i,1);
+        if(Date.now()-s.born > (slow?3000:1500)){
+            ents.splice(i,1);
             combo=0;
-            missed++;
-            document.getElementById("combo").textContent=combo;
-            if(missed>=4) gameOver();
+            miss++; updateUI();
+            if(miss>=5&&!shield) gameOver();
         }
     });
 
-    // particles
-    particles.forEach((p,i)=>{
-        p.x+=p.vx;
-        p.y+=p.vy;
-        p.life--;
+    // Boss
+    if(boss){
+        ctx.font=`${boss.size}px Arial`;
+        ctx.shadowBlur=40;
+        ctx.shadowColor="#0ff";
+        ctx.fillStyle="#0ff";
+        ctx.textAlign="center";
+        ctx.textBaseline="middle";
+        ctx.fillText("⟠",boss.x,boss.y);
+
+        // Boss HP bar
+        ctx.fillStyle="#0ff";
+        ctx.fillRect(boss.x-80,boss.y+boss.size,160*(boss.hp/(20*difficulty)),8);
+    }
+
+    // Particles
+    parts.forEach((p,i)=>{
+        ctx.globalAlpha=p.life/35;
         ctx.fillStyle=p.color;
-        ctx.globalAlpha = Math.max(0,p.life/40);
         ctx.fillRect(p.x,p.y,4,4);
         ctx.globalAlpha=1;
-        if(p.life<=0) particles.splice(i,1);
+
+        p.x+=p.vx; p.y+=p.vy; p.life--;
+        if(p.life<=0) parts.splice(i,1);
     });
 
     requestAnimationFrame(draw);
 }
 
-/* =====================================================
-    START GAME
-=====================================================*/
-function startGame(){
-    score=combo=power=missed=0;
-    spawnRate=900;
-    entities=[];
-    particles=[];
-    gameRunning=true;
-    slowTimeActive=false;
-    bossActive=false;
-
-    document.getElementById("score").textContent=0;
-    document.getElementById("combo").textContent=0;
-    document.getElementById("power").textContent="0%";
-
-    document.getElementById("bigMessage").style.display="none";
+function start(){
+    ents=[]; parts=[]; trails=[];
+    boss=null; game=true; slow=false; shield=false;
+    score=0; combo=0; power=0; wave=1; miss=0;
+    spawnRate=900; difficulty=1;
+    document.getElementById("big").style.display="none";
     document.getElementById("restartBtn").style.display="none";
-
-    spawnSymbol();
+    updateUI();
+    spawn();
 }
 
 draw();
-startGame();
+start();
 
 </script>
 </body>
