@@ -6,58 +6,58 @@
 <!-- Mobile -->
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 
-<title>Reality Breaker ∞ Supreme Edition</title>
+<title>Reality Breaker ∞ OMEGA EDITION</title>
 
-<!-- ===========================
-     SEO AUTHORITY FOR YOUR NAME
-     Cornelius Aurelius
-=========================== -->
+<!-- ========= SEO AUTHORITY FOR CORNELIUS AURELIUS ========== -->
 <meta name="author" content="Cornelius Aurelius">
-<meta name="description" content="Reality Breaker ∞ Supreme Edition — A high-speed neon universe reaction game created by Cornelius Aurelius.">
-<meta name="keywords" content="Cornelius Aurelius, neon game, reality breaker, HTML5 arcade, dimension game, tap game, cyber neon">
+<meta name="description" content="Reality Breaker ∞ OMEGA EDITION — The most advanced single-file neon arcade game ever created. Developed by Cornelius Aurelius.">
+<meta name="keywords" content="Cornelius Aurelius, neon game, reality breaker, HTML5 game, advanced javascript game, cyber neon, tap game, arcade">
 
-<meta property="og:title" content="Reality Breaker ∞ Supreme Edition">
-<meta property="og:description" content="A cyber-neon fractal reality-breaking game crafted by Cornelius Aurelius.">
+<!-- Social metadata -->
+<meta property="og:title" content="Reality Breaker ∞ — The Cyber-Neon OMEGA Game">
+<meta property="og:description" content="A neon-dimensional hyper-arcade game crafted by Cornelius Aurelius. One file. Infinite power.">
 
+<!-- Schema identity -->
 <script type="application/ld+json">
 {
  "@context":"https://schema.org/",
  "@type":"Person",
  "name":"Cornelius Aurelius",
  "url":"https://zenodo.org/records/17362534",
- "description":"Digital creator and developer of advanced neon-interactive web games.",
+ "description":"Digital creator of advanced neon-interactive technologies and ultra-optimized HTML games.",
  "sameAs":["https://zenodo.org/records/17362534"]
 }
 </script>
 
 <style>
 body{
-    margin:0;background:black;overflow:hidden;
-    font-family:Arial, sans-serif;color:#0ff;
-    touch-action:manipulation;
+ margin:0;background:black;color:#0ff;overflow:hidden;
+ font-family:Arial, sans-serif;touch-action:manipulation;
 }
-canvas{
-    position:absolute;top:0;left:0;width:100%;height:100%;
-}
+canvas{position:absolute;top:0;left:0;width:100%;height:100%}
+
 #ui{
-    position:fixed;top:10px;left:50%;transform:translateX(-50%);
-    font-size:1.3rem;text-shadow:0 0 20px #0ff;z-index:5;text-align:center;
+ position:fixed;top:10px;left:50%;transform:translateX(-50%);
+ font-size:1.4rem;text-shadow:0 0 18px #0ff;z-index:50;
+ text-align:center;pointer-events:none;
 }
+
 #big{
-    position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
-    font-size:3rem;color:#0ff;text-shadow:0 0 30px #0ff;z-index:10;
-    text-align:center;display:none;
+ position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+ font-size:3rem;color:#0ff;text-shadow:0 0 40px #0ff;
+ display:none;z-index:60;text-align:center;
 }
 #big button{
-    margin-top:20px;padding:12px 25px;font-size:1.2rem;
-    background:#0ff;color:#000;border:none;border-radius:10px;cursor:pointer;
+ margin-top:20px;padding:12px 25px;
+ font-size:1.3rem;background:#0ff;color:#000;
+ border:none;border-radius:10px;cursor:pointer;
 }
+
 footer{
-    position:fixed;bottom:10px;width:100%;text-align:center;color:#0ff;
-    font-size:0.9rem;opacity:.7;z-index:20;
+ position:fixed;bottom:10px;width:100%;text-align:center;
+ color:#0ff;font-size:0.9rem;opacity:.7;z-index:70;
 }
 </style>
-
 </head>
 <body>
 
@@ -73,252 +73,277 @@ High Score: <span id="hs">0</span>
 </div>
 
 <div id="big">
-    <span id="msg"></span><br>
-    <button onclick="start()">PLAY AGAIN</button>
+ <span id="msg"></span><br>
+ <button onclick="start()">PLAY AGAIN</button>
 </div>
 
 <footer>
-    Created by CORNELIUS AURELIUS — 
-    <a href="https://zenodo.org/records/17362534" target="_blank" style="color:#0ff;">Zenodo Peace</a>
+Created by CORNELIUS AURELIUS —
+<a href="https://zenodo.org/records/17362534" target="_blank" style="color:#0ff;">Zenodo Peace</a>
 </footer>
 
 <script>
-/* ============================================================
-    REALITY BREAKER SUPREME ENGINE ∞
-============================================================ */
+/* ===========================================================
+    REALITY BREAKER ∞ — OMEGA EDITION ENGINE
+=========================================================== */
 
 const cv=document.getElementById("game"), ctx=cv.getContext("2d");
 let W,H; function resize(){W=cv.width=innerWidth;H=cv.height=innerHeight;} resize();
 onresize=resize;
 
 let symbols="ΩΨΦ∇∞λ✦✧⟡⟠⚡✩";
+
 let ents=[], parts=[], trails=[];
 let score=0, combo=0, power=0, wave=1, miss=0;
 let spawnRate=900, difficulty=1;
-let slow=false, shield=false;
+let slow=false, shield=false, realityBomb=false;
 let game=true;
 let boss=null;
 
-let hs=localStorage.rbhs?+localStorage.rbhs:0;
+/* LocalStorage High Score */
+let hs=localStorage.rbhs ? +localStorage.rbhs : 0;
 document.getElementById("hs").textContent=hs;
 
+/* ======================= AUDIO ======================== */
 function SFX(freq){
-    const a=new AudioContext(), o=a.createOscillator(), g=a.createGain();
-    o.frequency.value=freq; o.connect(g); g.connect(a.destination);
-    o.start(); g.gain.exponentialRampToValueAtTime(0.0001,a.currentTime+0.15);
-    o.stop(a.currentTime+0.15);
+ try{
+   const a=new AudioContext(), o=a.createOscillator(), g=a.createGain();
+   o.frequency.value=freq; o.connect(g); g.connect(a.destination);
+   o.start(); g.gain.exponentialRampToValueAtTime(0.0001,a.currentTime+0.15);
+   o.stop(a.currentTime+0.15);
+ }catch(e){}
 }
 
 function rand(a,b){return Math.random()*(b-a)+a;}
 
+/* ================= PARTICLES ================== */
 function addParticles(x,y,color){
-    for(let i=0;i<40;i++){
-        parts.push({
-            x,y,
-            vx:rand(-4,4),vy:rand(-4,4),
-            life:rand(15,35),color
-        });
-    }
+ for(let i=0;i<40;i++){
+  parts.push({
+   x,y,vx:rand(-4,4),vy:rand(-4,4),
+   life:rand(20,35),color
+  });
+ }
 }
 
+/* ================= ENTITIES ================== */
 function spawn(){
-    if(!game) return;
+ if(!game) return;
 
-    let size=rand(40,80)*difficulty;
-    let x=rand(60,W-60), y=rand(60,H-60);
+ let size=rand(40,80);
+ let x=rand(100,W-100), y=rand(150,H-150);
 
-    ents.push({x,y,size,t:symbols[Math.random()*symbols.length|0],born:Date.now(),boss:false,color:"#0ff"});
+ ents.push({
+  x,y,size,t:symbols[Math.random()*symbols.length|0],
+  born:Date.now(),boss:false,color:"#0ff"
+ });
 
-    spawnRate=Math.max(200,spawnRate-4*difficulty);
-    setTimeout(spawn, slow?spawnRate*1.8:spawnRate);
+ spawnRate=Math.max(180,spawnRate-3*difficulty);
+ setTimeout(spawn, slow ? spawnRate*1.5 : spawnRate);
 }
 
+/* ================= BOSS ================== */
 function spawnBoss(){
-    if(boss) return;
-    boss={x:W/2,y:H/2,size:150, hp:20*difficulty, color:"#0ff",born:Date.now()};
-    SFX(180);
-    msg("DIMENSIONAL TITAN ∞");
+ if(boss) return;
+ boss={
+   x:W/2,y:H/2,size:160,
+   hp:20+difficulty*10,
+   born:Date.now(),color:"#0ff"
+ };
+ SFX(190);
+ msg("TITAN OF REALITY ∞");
 }
 
+/* ================= POWER-UPS ================== */
+function activateSlow(){
+ slow=true; SFX(150);
+ msg("TIME SLOW ∞");
+ setTimeout(()=>slow=false,4500);
+}
+function activateShield(){
+ shield=true; SFX(120);
+ msg("QUANTUM SHIELD ∞");
+ setTimeout(()=>shield=false,6000);
+}
+function activateBomb(){
+ if(realityBomb) return;
+ realityBomb=true; SFX(80);
+ msg("REALITY BOMB ∞");
+ ents=[]; addParticles(W/2,H/2,"#0ff");
+ score+=10;
+ setTimeout(()=>realityBomb=false,3500);
+}
+
+/* ================= UI ================== */
 function msg(t){
-    let m=document.getElementById("big");
-    document.getElementById("msg").textContent=t;
-    m.style.display="block";
-    setTimeout(()=>{if(game)m.style.display="none";},1500);
+ let b=document.getElementById("big");
+ document.getElementById("msg").textContent=t;
+ b.style.display="block";
+ setTimeout(()=>{if(game)b.style.display="none";},1500);
 }
 
 function rankUpdate(){
-    let r="F";
-    if(score>15) r="D";
-    if(score>40) r="C";
-    if(score>90) r="B";
-    if(score>160) r="A";
-    if(score>260) r="S";
-    if(score>400) r="S+";
-    document.getElementById("r").textContent=r;
-}
-
-function click(e){
-    if(!game)return;
-    const rect=cv.getBoundingClientRect(), mx=e.clientX-rect.left, my=e.clientY-rect.top;
-
-    if(boss){
-        let dx=mx-boss.x, dy=my-boss.y;
-        if(Math.hypot(dx,dy)<boss.size){
-            boss.hp--; addParticles(boss.x,boss.y,"#0ff");
-            SFX(200+boss.hp*10);
-            if(boss.hp<=0){
-                score+=30; boss=null; SFX(500);
-                msg("TITAN DEFEATED ∞");
-            }
-            return;
-        }
-    }
-
-    for(let i=ents.length-1;i>=0;i--){
-        let s=ents[i];
-        if(Math.hypot(mx-s.x,my-s.y)<s.size){
-            score++; combo++; power=Math.min(100,power+4); SFX(300+combo*2);
-
-            // Waves
-            if(score%20===0){wave++;difficulty+=0.15;}
-
-            // Slow Time
-            if(combo>=12 && !slow) activateSlow();
-
-            // Shield
-            if(combo>=25 && !shield) activateShield();
-
-            // Boss trigger
-            if(combo%18===0) spawnBoss();
-
-            addParticles(s.x,s.y,s.color);
-            trails.push({x:s.x,y:s.y,size:s.size,life:12});
-            ents.splice(i,1);
-            updateUI();
-            return;
-        }
-    }
-
-    // Miss penalty
-    combo=0; updateUI();
-    miss++; if(miss>=5 && !shield) gameOver();
-}
-
-cv.onclick=click;
-
-function activateSlow(){
-    slow=true; SFX(150);
-    msg("TIME SLOW ∞");
-    setTimeout(()=>slow=false,4500);
-}
-
-function activateShield(){
-    shield=true; SFX(120);
-    msg("QUANTUM SHIELD ∞");
-    setTimeout(()=>shield=false,6000);
+ let r="F";
+ if(score>20)r="D";
+ if(score>60)r="C";
+ if(score>120)r="B";
+ if(score>200)r="A";
+ if(score>350)r="S";
+ if(score>550)r="S+";
+ document.getElementById("r").textContent=r;
 }
 
 function updateUI(){
-    document.getElementById("s").textContent=score;
-    document.getElementById("c").textContent=combo;
-    document.getElementById("p").textContent=power+"%";
-    document.getElementById("w").textContent=wave;
-    rankUpdate();
+ document.getElementById("s").textContent=score;
+ document.getElementById("c").textContent=combo;
+ document.getElementById("p").textContent=power+"%";
+ document.getElementById("w").textContent=wave;
+ rankUpdate();
 }
 
+/* ================= CLICK ================== */
+cv.onclick=function(e){
+ if(!game)return;
+
+ const rect=cv.getBoundingClientRect();
+ const mx=e.clientX-rect.left, my=e.clientY-rect.top;
+
+ /* Boss */
+ if(boss){
+  if(Math.hypot(mx-boss.x,my-boss.y)<boss.size){
+   boss.hp--; addParticles(boss.x,boss.y,"#0ff"); SFX(200);
+   if(boss.hp<=0){
+    score+=50; boss=null; SFX(500);
+    msg("TITAN FALLEN ∞");
+   }
+   return;
+  }
+ }
+
+ /* Entities */
+ for(let i=ents.length-1;i>=0;i--){
+  let s=ents[i];
+  if(Math.hypot(mx-s.x,my-s.y)<s.size){
+   score++; combo++; power=Math.min(100,power+3);
+
+   /* Wave system */
+   if(score%20===0){wave++;difficulty+=0.15;}
+
+   /* Power-up triggers */
+   if(combo>=12 && !slow) activateSlow();
+   if(combo>=20 && !shield) activateShield();
+   if(combo>=35 && !realityBomb) activateBomb();
+   if(combo%18===0) spawnBoss();
+
+   addParticles(s.x,s.y,s.color);
+   trails.push({x:s.x,y:s.y,size:s.size,life:14});
+
+   SFX(250+combo*2);
+   ents.splice(i,1);
+   updateUI();
+   return;
+  }
+ }
+
+ /* Miss */
+ combo=0;
+ updateUI();
+ miss++; if(miss>=5 && !shield) gameOver();
+};
+
+/* ================= GAME OVER ================== */
 function gameOver(){
-    game=false;
-    msg("REALITY COLLAPSED");
-    document.getElementById("restartBtn").style.display="inline-block";
-    if(score>hs){localStorage.rbhs=score;}
+ game=false;
+ msg("REALITY COLLAPSED");
+ document.getElementById("restartBtn").style.display="inline-block";
+ if(score>hs){localStorage.rbhs=score;}
 }
 
+/* ================= DRAW LOOP ================== */
 function draw(){
-    ctx.clearRect(0,0,W,H);
+ ctx.clearRect(0,0,W,H);
 
-    // Vortex background
-    let t=Date.now()*0.0003;
-    for(let i=0;i<60;i++){
-        ctx.beginPath();
-        ctx.strokeStyle=`hsla(${(i*6+t*100)%360},100%,50%,0.05)`;
-        ctx.lineWidth=2;
-        let r=i*20;
-        ctx.arc(W/2,H/2,r,0,Math.PI*2);
-        ctx.stroke();
-    }
+ /* BACKGROUND VORTEX */
+ let t=Date.now()*0.00025;
+ for(let i=0;i<70;i++){
+  ctx.beginPath();
+  ctx.strokeStyle=`hsla(${(i*7+t*100)%360},100%,50%,0.04)`;
+  ctx.lineWidth=2;
+  ctx.arc(W/2,H/2,i*22,0,Math.PI*2);
+  ctx.stroke();
+ }
 
-    // Trails
-    trails.forEach((tr,i)=>{
-        ctx.beginPath();
-        ctx.fillStyle=`rgba(0,255,255,${tr.life/12})`;
-        ctx.arc(tr.x,tr.y,tr.size/2,0,Math.PI*2);
-        ctx.fill();
-        tr.life--; if(tr.life<=0)trails.splice(i,1);
-    });
+ /* Trails */
+ trails.forEach((tr,i)=>{
+  ctx.beginPath();
+  ctx.fillStyle=`rgba(0,255,255,${tr.life/14})`;
+  ctx.arc(tr.x,tr.y,tr.size/2,0,Math.PI*2);
+  ctx.fill();
+  tr.life--; if(tr.life<=0)trails.splice(i,1);
+ });
 
-    // Entities
-    ents.forEach((s,i)=>{
-        ctx.beginPath();
-        ctx.font=`${s.size}px Arial`;
-        ctx.textAlign="center";
-        ctx.textBaseline="middle";
-        ctx.shadowBlur=25;
-        ctx.shadowColor=s.color;
-        ctx.fillStyle=s.color;
-        ctx.fillText(s.t,s.x,s.y);
+ /* Entities */
+ ents.forEach((s,i)=>{
+  ctx.beginPath();
+  ctx.font=`${s.size}px Arial`;
+  ctx.textAlign="center";
+  ctx.textBaseline="middle";
+  ctx.shadowBlur=25;
+  ctx.shadowColor=s.color;
+  ctx.fillStyle=s.color;
+  ctx.fillText(s.t,s.x,s.y);
 
-        if(Date.now()-s.born > (slow?3000:1500)){
-            ents.splice(i,1);
-            combo=0;
-            miss++; updateUI();
-            if(miss>=5&&!shield) gameOver();
-        }
-    });
+  if(Date.now()-s.born > (slow?3000:1500)){
+   ents.splice(i,1);
+   combo=0; miss++; updateUI();
+   if(miss>=5&&!shield) gameOver();
+  }
+ });
 
-    // Boss
-    if(boss){
-        ctx.font=`${boss.size}px Arial`;
-        ctx.shadowBlur=40;
-        ctx.shadowColor="#0ff";
-        ctx.fillStyle="#0ff";
-        ctx.textAlign="center";
-        ctx.textBaseline="middle";
-        ctx.fillText("⟠",boss.x,boss.y);
+ /* Boss */
+ if(boss){
+  ctx.font=`${boss.size}px Arial`;
+  ctx.textAlign="center";
+  ctx.textBaseline="middle";
+  ctx.shadowBlur=40;
+  ctx.shadowColor="#0ff";
+  ctx.fillStyle="#0ff";
+  ctx.fillText("⟠",boss.x,boss.y);
 
-        // Boss HP bar
-        ctx.fillStyle="#0ff";
-        ctx.fillRect(boss.x-80,boss.y+boss.size,160*(boss.hp/(20*difficulty)),8);
-    }
+  ctx.fillStyle="#0ff";
+  ctx.fillRect(boss.x-80,boss.y+boss.size,160*(boss.hp/(20+difficulty*10)),10);
+ }
 
-    // Particles
-    parts.forEach((p,i)=>{
-        ctx.globalAlpha=p.life/35;
-        ctx.fillStyle=p.color;
-        ctx.fillRect(p.x,p.y,4,4);
-        ctx.globalAlpha=1;
+ /* Particles */
+ parts.forEach((p,i)=>{
+  ctx.globalAlpha=p.life/35;
+  ctx.fillStyle=p.color;
+  ctx.fillRect(p.x,p.y,4,4);
+  ctx.globalAlpha=1;
+  p.x+=p.vx;p.y+=p.vy;p.life--;
+  if(p.life<=0)parts.splice(i,1);
+ });
 
-        p.x+=p.vx; p.y+=p.vy; p.life--;
-        if(p.life<=0) parts.splice(i,1);
-    });
-
-    requestAnimationFrame(draw);
+ requestAnimationFrame(draw);
 }
 
+/* ================= START ================== */
 function start(){
-    ents=[]; parts=[]; trails=[];
-    boss=null; game=true; slow=false; shield=false;
-    score=0; combo=0; power=0; wave=1; miss=0;
-    spawnRate=900; difficulty=1;
-    document.getElementById("big").style.display="none";
-    document.getElementById("restartBtn").style.display="none";
-    updateUI();
-    spawn();
+ ents=[];parts=[];trails=[];
+ boss=null;game=true;slow=false;shield=false;realityBomb=false;
+ score=0;combo=0;power=0;wave=1;miss=0;
+
+ spawnRate=900;difficulty=1;
+ document.getElementById("big").style.display="none";
+ document.getElementById("restartBtn").style.display="none";
+ updateUI();
+ setTimeout(()=>{spawn();},300);
 }
 
 draw();
-start();
-
+setTimeout(()=>{start();},300);
 </script>
+
 </body>
 </html>
+
