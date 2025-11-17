@@ -113,3 +113,265 @@
     Power: <span id="power">0%</span>
 </div>
 
+<div id="pulseMsg">TIME SLOW ∞</div>
+
+<div id="bigMessage">
+    <span id="messageText"></span><br>
+    <button id="restartBtn" onclick="startGame()">PLAY AGAIN</button>
+</div>
+
+<footer>
+    Crafted by CORNELIUS AURELIUS —
+    <a href="https://zenodo.org/records/17362534" target="_blank" style="color:#0ff;">Zenodo Peace</a>
+</footer>
+
+<script>
+/* =====================================================
+    REALITY BREAKER ∞ — GOD-TIER ENGINE
+=====================================================*/
+
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
+let W, H;
+
+function resize(){
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+}
+resize();
+window.onresize = resize;
+
+const symbols = ["Ω","Ψ","Φ","∇","∞","λ","✦","✧","⟡","⟠","⚡","✩"];
+
+let entities = [];
+let particles = [];
+let score = 0;
+let combo = 0;
+let power = 0;
+let missed = 0;
+
+let spawnRate = 900;
+let gameRunning = true;
+let slowTimeActive = false;
+let bossActive = false;
+
+/* =========== RANDOM =========== */
+function rand(min,max){ return Math.random()*(max-min)+min; }
+
+/* =====================================================
+    PARTICLES
+=====================================================*/
+function makeParticles(x,y,color){
+    for(let i=0;i<30;i++){
+        particles.push({
+            x,y,
+            vx:rand(-3,3),
+            vy:rand(-3,3),
+            life:rand(20,40),
+            color
+        });
+    }
+}
+
+/* =====================================================
+    ENTITIES
+=====================================================*/
+function spawnSymbol(){
+    if(!gameRunning) return;
+
+    const size = rand(40,80);
+    const x = rand(70, W-70);
+    const y = rand(70, H-70);
+
+    entities.push({
+        x,y,size,
+        text: symbols[Math.floor(Math.random()*symbols.length)],
+        born:Date.now(),
+        color:slowTimeActive ? "#09f" : "cyan"
+    });
+
+    spawnRate = Math.max(250, spawnRate - 8);
+
+    setTimeout(spawnSymbol, slowTimeActive ? spawnRate*1.8 : spawnRate);
+}
+
+/* =====================================================
+    SUPER POWER: TIME SLOW ∞
+=====================================================*/
+function activateSlow(){
+    if(power < 100 || slowTimeActive) return;
+
+    slowTimeActive = true;
+    power = 0;
+    document.getElementById("power").textContent = power + "%";
+
+    document.getElementById("pulseMsg").style.display = "block";
+
+    setTimeout(()=>{
+        slowTimeActive = false;
+        document.getElementById("pulseMsg").style.display="none";
+    }, 4500);
+}
+
+/* =====================================================
+    BOSS EVENT
+=====================================================*/
+function spawnBoss(){
+    if(bossActive) return;
+    bossActive = true;
+
+    entities.push({
+        x:W/2,
+        y:H/2,
+        size:150,
+        text:"⟠",
+        born:Date.now(),
+        color:"#0ff",
+        boss:true,
+        hp:10
+    });
+
+    message("DIMENSIONAL BOSS ∞");
+}
+
+/* =====================================================
+    TAP / HIT DETECTION
+=====================================================*/
+canvas.onclick = function(e){
+    if(!gameRunning) return;
+
+    const rect = canvas.getBoundingClientRect();
+    const mx = e.clientX - rect.left;
+    const my = e.clientY - rect.top;
+
+    for(let i=entities.length-1;i>=0;i--){
+        let s = entities[i];
+        let dx = mx - s.x;
+        let dy = my - s.y;
+
+        if(Math.hypot(dx,dy) < s.size){
+            
+            // Boss hit
+            if(s.boss){
+                s.hp--;
+                makeParticles(s.x,s.y,"#0ff");
+                if(s.hp <= 0){
+                    entities.splice(i,1);
+                    bossActive = false;
+                    score += 20;
+                }
+                return;
+            }
+
+            score++;
+            combo++;
+            power = Math.min(100, power + 3);
+
+            document.getElementById("score").textContent = score;
+            document.getElementById("combo").textContent = combo;
+            document.getElementById("power").textContent = power + "%";
+
+            makeParticles(s.x,s.y,s.color);
+
+            if(combo % 20 === 0) spawnBoss();
+            if(combo % 12 === 0) activateSlow();
+
+            if(navigator.vibrate) navigator.vibrate(20);
+
+            entities.splice(i,1);
+            return;
+        }
+    }
+
+    combo = 0;
+    document.getElementById("combo").textContent = combo;
+};
+
+/* =====================================================
+    GAME OVER
+=====================================================*/
+function gameOver(){
+    gameRunning = false;
+    message("REALITY COLLAPSED");
+    document.getElementById("restartBtn").style.display="inline-block";
+}
+
+/* =====================================================
+    SHOW MESSAGE
+=====================================================*/
+function message(txt){
+    const box=document.getElementById("bigMessage");
+    document.getElementById("messageText").textContent=txt;
+    box.style.display="block";
+
+    setTimeout(()=>{ if(gameRunning) box.style.display="none"; },1500);
+}
+
+/* =====================================================
+    RENDER LOOP
+=====================================================*/
+function draw(){
+    ctx.clearRect(0,0,W,H);
+
+    // Draw symbols
+    entities.forEach((s,i)=>{
+        ctx.fillStyle=s.color;
+        ctx.font = `${s.size}px Arial`;
+        ctx.textAlign="center";
+        ctx.textBaseline="middle";
+        ctx.shadowBlur=25;
+        ctx.shadowColor=s.color;
+        ctx.fillText(s.text,s.x,s.y);
+
+        if(Date.now()-s.born > (slowTimeActive?3000:1500)){
+            entities.splice(i,1);
+            combo=0;
+            missed++;
+            document.getElementById("combo").textContent=combo;
+            if(missed>=4) gameOver();
+        }
+    });
+
+    // particles
+    particles.forEach((p,i)=>{
+        p.x+=p.vx;
+        p.y+=p.vy;
+        p.life--;
+        ctx.fillStyle=p.color;
+        ctx.globalAlpha = Math.max(0,p.life/40);
+        ctx.fillRect(p.x,p.y,4,4);
+        ctx.globalAlpha=1;
+        if(p.life<=0) particles.splice(i,1);
+    });
+
+    requestAnimationFrame(draw);
+}
+
+/* =====================================================
+    START GAME
+=====================================================*/
+function startGame(){
+    score=combo=power=missed=0;
+    spawnRate=900;
+    entities=[];
+    particles=[];
+    gameRunning=true;
+    slowTimeActive=false;
+    bossActive=false;
+
+    document.getElementById("score").textContent=0;
+    document.getElementById("combo").textContent=0;
+    document.getElementById("power").textContent="0%";
+
+    document.getElementById("bigMessage").style.display="none";
+    document.getElementById("restartBtn").style.display="none";
+
+    spawnSymbol();
+}
+
+draw();
+startGame();
+
+</script>
+</body>
+</html>
