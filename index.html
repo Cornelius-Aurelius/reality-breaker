@@ -1,234 +1,40 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="en" data-theme="rift">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-
-<title>Reality Breaker ∞ Chromebook Edition</title>
-
-<style>
-body{
- margin:0;background:black;color:#0ff;overflow:hidden;
- font-family:Arial, sans-serif;touch-action:manipulation;
-}
-canvas{position:absolute;top:0;left:0;width:100%;height:100%}
-#ui{
- position:fixed;top:10px;left:50%;transform:translateX(-50%);
- font-size:1.4rem;text-shadow:0 0 18px #0ff;z-index:50;
- text-align:center;pointer-events:none;
-}
-#big{
- position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
- font-size:3rem;color:#0ff;text-shadow:0 0 40px #0ff;
- display:none;z-index:60;text-align:center;
-}
-#big button{
- margin-top:20px;padding:12px 25px;
- font-size:1.3rem;background:#0ff;color:#000;
- border:none;border-radius:10px;cursor:pointer;
-}
-footer{
- position:fixed;bottom:10px;width:100%;text-align:center;
- color:#0ff;font-size:0.9rem;opacity:.7;z-index:70;
-}
-</style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#070b1b">
+<meta name="color-scheme" content="dark">
+<title>Reality Breaker ∞ — Quantum Rift Arcade Game | Cornelius Aurelius</title>
+<meta name="description" content="Play Reality Breaker ∞: Quantum Rift, an original free cosmic arcade reaction game created by Cornelius Aurelius. Tap glowing symbols, survive waves, break bosses, charge powers and chase a new high score on any device.">
+<meta name="author" content="Cornelius Aurelius">
+<meta name="robots" content="index,follow,max-image-preview:large">
+<link rel="canonical" href="https://cornelius-aurelius.github.io/reality-breaker/">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<meta property="og:type" content="website"><meta property="og:title" content="Reality Breaker ∞ — Quantum Rift | Cornelius Aurelius">
+<meta property="og:description" content="Break the rift. Catch cosmic glyphs. Beat escalating waves and spectral bosses. Free original arcade game by Cornelius Aurelius.">
+<meta property="og:url" content="https://cornelius-aurelius.github.io/reality-breaker/">
+<meta property="og:image" content="https://cornelius-aurelius.github.io/reality-breaker/assets/social-preview.png">
+<meta property="og:image:alt" content="Reality Breaker Quantum Rift original cosmic arcade game created by Cornelius Aurelius">
+<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Reality Breaker ∞ — Quantum Rift"><meta name="twitter:image" content="https://cornelius-aurelius.github.io/reality-breaker/assets/social-preview.png">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@graph":[{"@type":"Person","@id":"https://corneliusaurelius.com/#person","name":"Cornelius Aurelius","url":"https://corneliusaurelius.com/","description":"Independent artist, inventor, creator and developer of original browser games."},{"@type":"VideoGame","@id":"https://cornelius-aurelius.github.io/reality-breaker/#game","name":"Reality Breaker ∞ — Quantum Rift Edition","url":"https://cornelius-aurelius.github.io/reality-breaker/","description":"An original neon cosmic reflex arcade game. Capture moving symbol targets before they expire, chain combos, manage energy abilities and defeat boss rifts.","genre":["Arcade","Action","Reflex"],"gamePlatform":["Web browser","Desktop","Mobile","Tablet","Chromebook"],"operatingSystem":"Any modern web browser","applicationCategory":"GameApplication","isAccessibleForFree":true,"inLanguage":"en","author":{"@id":"https://corneliusaurelius.com/#person"},"creator":{"@id":"https://corneliusaurelius.com/#person"},"publisher":{"@id":"https://corneliusaurelius.com/#person"},"image":"https://cornelius-aurelius.github.io/reality-breaker/assets/social-preview.png"},{"@type":"WebPage","@id":"https://cornelius-aurelius.github.io/reality-breaker/#webpage","url":"https://cornelius-aurelius.github.io/reality-breaker/","name":"Reality Breaker ∞ — Quantum Rift","mainEntity":{"@id":"https://cornelius-aurelius.github.io/reality-breaker/#game"},"author":{"@id":"https://corneliusaurelius.com/#person"}}]}
+</script>
+<link rel="stylesheet" href="styles.css">
+<script src="game-core.js" defer></script><script src="game.js" defer></script>
 </head>
 <body>
-
-<canvas id="game"></canvas>
-
-<div id="ui">
-Score: <span id="s">0</span> |
-Combo: <span id="c">0</span> |
-Power: <span id="p">0%</span><br>
-Rank: <span id="r">F</span> |
-Wave: <span id="w">1</span> |
-High Score: <span id="hs">0</span>
-</div>
-
-<div id="big">
- <span id="msg"></span><br>
- <button onclick="start()">PLAY AGAIN</button>
-</div>
-
-<footer>
-Created by CORNELIUS AURELIUS —
-<a href="https://zenodo.org/records/17362534" target="_blank" style="color:#0ff;">Zenodo Peace</a>
-</footer>
-
-<script>
-/* ============== NO AUDIO VERSION — SAFE ON CHROMEBOOKS ============== */
-
-const cv=document.getElementById("game"), ctx=cv.getContext("2d");
-let W,H; function resize(){W=cv.width=innerWidth;H=cv.height=innerHeight;} resize();
-onresize=resize;
-
-let symbols="ΩΨΦ∇∞λ✦✧⟡⟠⚡✩";
-
-let ents=[], parts=[], trails=[];
-let score=0, combo=0, power=0, wave=1, miss=0;
-let spawnRate=900, difficulty=1;
-let slow=false, shield=false;
-let gameRunning=true;
-let boss=null;
-
-/* LocalStorage High Score */
-let hs=localStorage.rbhs ? +localStorage.rbhs : 0;
-document.getElementById("hs").textContent=hs;
-
-/* Safe SFX Stub (does nothing, avoids crashes) */
-function SFX(freq){}
-
-/* Helpers */
-function rand(a,b){return Math.random()*(b-a)+a;}
-
-function addParticles(x,y){
- for(let i=0;i<40;i++){
-  parts.push({x,y,vx:rand(-4,4),vy:rand(-4,4),life:rand(20,35)});
- }
-}
-
-function spawn(){
- if(!gameRunning) return;
-
- ents.push({
-  x:rand(100,W-100),
-  y:rand(150,H-150),
-  size:rand(40,80),
-  t:symbols[Math.random()*symbols.length|0],
-  born:Date.now()
- });
-
- spawnRate=Math.max(200,spawnRate-3*difficulty);
- setTimeout(spawn, slow ? spawnRate*1.5 : spawnRate);
-}
-
-function spawnBoss(){
- if(boss) return;
- boss={x:W/2,y:H/2,size:160,hp:30+difficulty*10};
-}
-
-function updateUI(){
- document.getElementById("s").textContent=score;
- document.getElementById("c").textContent=combo;
- document.getElementById("p").textContent=power+"%";
- document.getElementById("w").textContent=wave;
-}
-
-function gameOver(){
- gameRunning=false;
- document.getElementById("msg").textContent="REALITY COLLAPSED";
- document.getElementById("big").style.display="block";
- if(score>hs){localStorage.rbhs=score;}
-}
-
-cv.onclick=function(e){
- if(!gameRunning)return;
-
- const rect=cv.getBoundingClientRect();
- const mx=e.clientX-rect.left, my=e.clientY-rect.top;
-
- /* Boss */
- if(boss){
-  if(Math.hypot(mx-boss.x,my-boss.y)<boss.size){
-   boss.hp--; addParticles(boss.x,boss.y);
-   if(boss.hp<=0){
-    score+=50; boss=null;
-   }
-   updateUI();
-   return;
-  }
- }
-
- /* Entities */
- for(let i=ents.length-1;i>=0;i--){
-  let s=ents[i];
-  if(Math.hypot(mx-s.x,my-s.y)<s.size){
-   score++; combo++;
-
-   if(score%20===0){wave++;difficulty+=0.15;}
-   if(combo%18===0) spawnBoss();
-
-   addParticles(s.x,s.y);
-   ents.splice(i,1);
-   updateUI();
-   return;
-  }
- }
-
- combo=0; updateUI();
- miss++; if(miss>=5) gameOver();
-};
-
-function draw(){
- ctx.clearRect(0,0,W,H);
-
- /* Background vortex */
- let t=Date.now()*0.00025;
- for(let i=0;i<70;i++){
-  ctx.beginPath();
-  ctx.strokeStyle=`hsla(${(i*7+t*180)%360},100%,50%,0.04)`;
-  ctx.arc(W/2,H/2,i*22,0,Math.PI*2);
-  ctx.stroke();
- }
-
- /* Entities */
- ents.forEach((s,i)=>{
-  ctx.font=`${s.size}px Arial`;
-  ctx.textAlign="center";
-  ctx.textBaseline="middle";
-  ctx.shadowBlur=25;
-  ctx.shadowColor="#0ff";
-  ctx.fillStyle="#0ff";
-  ctx.fillText(s.t,s.x,s.y);
-
-  if(Date.now()-s.born > (slow?3000:1500)){
-   ents.splice(i,1);
-   combo=0; miss++; updateUI();
-   if(miss>=5) gameOver();
-  }
- });
-
- /* Boss */
- if(boss){
-  ctx.font=`${boss.size}px Arial`;
-  ctx.textAlign="center";
-  ctx.textBaseline="middle";
-  ctx.shadowBlur=40;
-  ctx.shadowColor="#0ff";
-  ctx.fillStyle="#0ff";
-  ctx.fillText("⟠",boss.x,boss.y);
-
-  ctx.fillStyle="#0ff";
-  ctx.fillRect(boss.x-80,boss.y+boss.size,160*(boss.hp/(30+difficulty*10)),10);
- }
-
- /* Particles */
- parts.forEach((p,i)=>{
-  ctx.globalAlpha=p.life/35;
-  ctx.fillStyle="#0ff";
-  ctx.fillRect(p.x,p.y,4,4);
-  ctx.globalAlpha=1;
-  p.x+=p.vx; p.y+=p.vy; p.life--;
-  if(p.life<=0) parts.splice(i,1);
- });
-
- requestAnimationFrame(draw);
-}
-
-function start(){
- ents=[];parts=[];boss=null;
- score=0;combo=0;power=0;wave=1;miss=0;
- gameRunning=true; spawnRate=900; difficulty=1;
-
- document.getElementById("big").style.display="none";
- updateUI();
- setTimeout(()=>spawn(),200);
-}
-
-draw();
-setTimeout(()=>start(),300);
-</script>
-
-</body>
-</html>
+<div class="ambient" aria-hidden="true"></div>
+<div class="shell">
+<header class="topbar"><a class="wordmark" href="https://corneliusaurelius.com/" aria-label="Cornelius Aurelius official website"><span class="mark">∞</span><span>CORNELIUS <strong>AURELIUS</strong><small>ORIGINAL ARCADE CREATIONS</small></span></a><div class="header-actions"><label for="theme">PALETTE <select id="theme" aria-label="Select colour theme"><option value="rift">QUANTUM</option><option value="solar">SOLAR</option><option value="matrix">MATRIX</option></select></label><button id="sound" type="button" class="mini" aria-pressed="false">♫ SOUND OFF</button></div></header>
+<main>
+<section class="intro"><div class="eyebrow"><span class="dot"></span> FREE BROWSER ARCADE <span class="slash">/</span> EDITION 2.0</div><h1>REALITY <em>BREAKER</em> <span class="infinity">∞</span></h1><p class="kicker">QUANTUM RIFT EDITION</p><p class="deck">The universe is fracturing. Catch the escaping signals, build unstoppable combos and close each dimensional rift before it consumes your shields.</p></section>
+<section class="game-layout" aria-label="Reality Breaker game">
+<aside class="side"><div class="side-title"><span class="signal"></span> MISSION CONTROL <span class="serial">RB—001</span></div><div class="stat-primary"><span>SCORE</span><strong id="score">0</strong><small>PERSONAL BEST <b id="best">0</b></small></div><div class="stat-pair"><div><span>WAVE</span><b id="wave">01</b></div><div><span>COMBO</span><b id="combo">×0</b></div></div><div class="side-label"><span>RIFT INTEGRITY</span><b id="lives">♥ ♥ ♥ ♥ ♥</b></div><div class="energy-caption"><span>QUANTUM CHARGE</span><strong id="power-text">0%</strong></div><div class="energy"><div id="powerbar"></div></div><p class="meter-tip">Earn power by capturing signals. Gold symbols give bonus charge.</p><div class="ability-grid"><button id="slow" type="button" disabled><span class="ability-icon">◷</span><span>TIME WARP<small>50% POWER · 6 SEC</small></span></button><button id="shield" type="button" disabled><span class="ability-icon">⬡</span><span>SHIELD<small>65% POWER · BLOCK 1 MISS</small></span></button></div><div class="status-card"><span>MISSION STATUS</span><strong id="status">AWAITING PILOT</strong><small id="details">Select a mode to enter the rift.</small></div><button id="pause" class="outline" type="button" disabled>Ⅱ PAUSE RUN</button></aside>
+<div class="arena-wrap"><div class="arena-head"><div><span class="live-dot"></span> <b>QUANTUM ARENA</b><small id="mode-display">READY FOR DEPLOYMENT</small></div><div class="arena-status"><span class="mobile-score" id="quickscore">0 PTS</span><span class="indicator" id="arena-indicator">RIFT STABLE</span></div></div><div class="board-frame"><canvas id="game" role="img" aria-label="Interactive reaction arena. Tap glowing targets or use numbered keys 1 to 5 to capture signals." tabindex="0"></canvas><div class="board-caption" aria-hidden="true"><span>CAPTURE THE SIGNALS</span><span id="timer-readout">∞ ENDLESS</span></div><div class="overlay" id="overlay"><div class="overlay-inner"><div class="logo-icon" aria-hidden="true">◇</div><p class="overlay-tag" id="overlay-tag">YOUR REALITY IS CALLING</p><h2 id="overlay-title">ENTER THE <span>RIFT</span></h2><p id="overlay-copy">Capture the glowing symbols before their countdown rings run out. Every 12 hits advances the wave. On boss waves, tap the giant rift repeatedly to break it.</p><div class="mode-buttons" id="mode-buttons"><button class="mode selected" data-mode="arcade"><strong>∞ ARCADE</strong><small>5 lives · endless waves</small></button><button class="mode" data-mode="blitz"><strong>⚡ BLITZ</strong><small>75-second high score run</small></button><button class="mode" data-mode="zen"><strong>✦ TRAINING</strong><small>Practice · no life limit</small></button></div><button id="primary" class="primary" type="button">▶ START ARCADE</button><p class="overlay-hint">TOUCH / CLICK TARGETS · KEYBOARD 1–5 · SPACE ON BOSSES</p></div></div></div><div class="arena-bottom"><div><span class="tiny-pulse"></span> <span id="feedback">SIGNAL ACQUISITION SYSTEM ONLINE</span></div><span>CREATED BY CORNELIUS AURELIUS</span><div class="mobile-abilities"><button id="quickslow" type="button" disabled>◷ TIME WARP</button><button id="quickshield" type="button" disabled>⬡ SHIELD</button></div></div></div>
+</section>
+<section class="how" id="how"><div class="how-header"><div class="eyebrow">FIELD MANUAL / HOW TO PLAY</div><h2>MASTER THE RIFT IN <em>FOUR STEPS</em></h2></div><div class="how-grid"><article><span class="step">01 / TARGET</span><h3>Catch the symbols</h3><p>Tap or click glowing glyphs before their outer rings disappear. Each captured signal gives points.</p></article><article><span class="step">02 / COMBO</span><h3>Keep the chain alive</h3><p>Hit consecutive targets for combo bonuses. Missing a signal costs a life in Arcade and Blitz.</p></article><article><span class="step">03 / POWER</span><h3>Control the battle</h3><p>Charge the meter to activate Time Warp or a protective Shield. Golden targets recharge you faster.</p></article><article><span class="step">04 / BOSS</span><h3>Break the boss rift</h3><p>Every fourth wave summons a giant rift. Tap it repeatedly, or press Space, before its timer ends.</p></article></div><p class="access-note">Desktop: mouse, keys 1–5 for visible targets, Space to strike bosses, P/Escape to pause, T for Time Warp and H for Shield. Mobile: tap directly on the glowing symbols. Audio starts muted. Training mode has no lives to lose.</p></section>
+<section class="about" aria-label="Creator and game information"><div><span class="eyebrow">AN ORIGINAL CORNELIUS AURELIUS GAME</span><h2>BUILT TO <em>BREAK THE ORDINARY.</em></h2><p><strong>Reality Breaker ∞ — Quantum Rift Edition</strong> is a free original arcade reflex game created by <strong>Cornelius Aurelius</strong>. Designed for desktops, Chromebooks, tablets and smartphones, it combines quick reaction challenges, escalating waves, combo scoring, tactical abilities and surreal neon visuals.</p></div><a href="https://corneliusaurelius.com/" class="home-link">EXPLORE THE CREATOR'S WORLD <span aria-hidden="true">↗</span></a></section>
+</main><footer><span>© <span id="year"></span> CORNELIUS AURELIUS. ORIGINAL GAME DESIGN &amp; DEVELOPMENT.</span><span>REALITY BREAKER ∞ · QUANTUM RIFT</span></footer>
+</div><div class="sr-only" id="announcer" aria-live="polite"></div>
+</body></html>
