@@ -1,0 +1,13 @@
+const test=require('node:test');const assert=require('node:assert/strict');const g=require('../game-core.js');
+test('reproducible fair spawn and bounded positions',()=>{let a=g.reset('arcade',42),b=g.reset('arcade',42);for(let i=0;i<50;i++){a.targets=[];b.targets=[];assert.deepEqual(g.spawn(a),g.spawn(b));let t=a.targets[0];assert.ok(t.x>=.13&&t.x<=.87&&t.y>=.15&&t.y<=.83)}});
+test('first run, hit scoring, combo and power',()=>{let s=g.reset();const a=g.spawn(s);assert.equal(g.targetHit(s,a.id),true);assert.equal(s.hits,1);assert.equal(s.score>=100,true);assert.equal(s.power>=13,true);assert.equal(g.targetHit(s,a.id),false)});
+test('five misses end arcade cleanly',()=>{let s=g.reset();for(let i=0;i<5;i++)g.loseLife(s,'test');assert.equal(s.phase,'over');assert.equal(s.lives,0);g.step(s,1);assert.equal(s.targets.length,0)});
+test('shield saves a life, charges have costs',()=>{let s=g.reset();s.power=100;assert.ok(g.activate(s,'shield'));assert.equal(s.power,35);g.loseLife(s,'test');assert.equal(s.lives,5);assert.equal(s.shield,0);assert.equal(g.activate(s,'slow'),false)});
+test('slow mode delays expiration correctly',()=>{let s=g.reset();s.power=70;g.activate(s,'slow');const t=g.spawn(s);t.ttl=1;g.step(s,.08);assert.ok(t.ttl>.95);});
+test('wave unlock and boss every four waves',()=>{let s=g.reset();for(let i=0;i<36;i++){const t=g.spawn(s);g.targetHit(s,t.id)}assert.equal(s.wave,4);assert.ok(s.boss);let hp=s.boss.hp;for(let i=0;i<hp;i++)g.bossHit(s);assert.equal(s.boss,null);assert.equal(s.successfulBosses,1);assert.ok(s.achievements.includes('boss-breaker'));});
+test('Blitz completes in real seconds',()=>{let s=g.reset('blitz');s.lives=Infinity;for(let i=0;i<940;i++)g.step(s,.08);assert.equal(s.phase,'over');assert.equal(s.time,0);});
+test('Zen mode never dies and can pause/resume',()=>{let s=g.reset('zen');for(let i=0;i<30;i++)g.loseLife(s,'test');assert.equal(s.phase,'playing');assert.equal(g.togglePause(s),true);assert.equal(s.phase,'paused');assert.equal(g.togglePause(s),true);});
+test('boss timing and penalty',()=>{let s=g.reset();s.boss={hp:2,maxHp:2,ttl:.04};g.step(s,.08);assert.equal(s.boss,null);assert.equal(s.lives,4);});
+test('tap coordinates and missed taps',()=>{let s=g.reset();const t=g.spawn(s);assert.ok(g.hitAt(s,t.x,t.y,1));assert.equal(s.hits,1);g.missTap(s);assert.equal(s.combo,0);});
+test('spawn loop respects max targets',()=>{let s=g.reset();for(let i=0;i<1000;i++)g.step(s,.08);assert.ok(s.targets.length<=g.difficulty(s.wave).maxTargets)});
+test('difficulty remains reasonable on high waves',()=>{for(let w=1;w<100;w++){const d=g.difficulty(w);assert.ok(d.interval>=.58&&d.lifetime>=1.55&&d.maxTargets<=5)}});
